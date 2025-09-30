@@ -1,24 +1,28 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
-entity mux is
-    Port(
-        mux_in1 : in  STD_LOGIC_VECTOR(15 downto 0);
-        mux_in2 : in  STD_LOGIC_VECTOR(15 downto 0);
-        mux_sel : in  STD_LOGIC;
-        mux_out : out  STD_LOGIC_VECTOR(15 downto 0)
+entity pc_mux is
+    port (
+        pc_plus1    : in  std_logic_vector(15 downto 0); -- caminho normal
+        jump_target : in  std_logic_vector(15 downto 0); -- usado em JMP
+        branch_addr : in  std_logic_vector(15 downto 0); -- usado em JEQ, JBG, JLR
+        flag        : in  std_logic;                     -- flag da ULA (zero/greater/less, conforme UC)
+        is_jump     : in  std_logic;                     -- sinal da UC
+        is_branch   : in  std_logic;                     -- sinal da UC
+        pc_next     : out std_logic_vector(15 downto 0)  -- próximo PC
     );
-end mux;
+end entity;
 
-architecture Behavioral of mux is
+architecture rtl of pc_mux is
 begin
-    process
+    process(pc_plus1, jump_target, branch_addr, flag, is_jump, is_branch)
     begin
-        if mux_sel = '0' then
-            mux_out <= mux_in1;
+        if is_jump = '1' then
+            pc_next <= jump_target;         -- JMP incondicional
+        elsif is_branch = '1' and flag = '1' then
+            pc_next <= branch_addr;         -- branch condicional atendido
         else
-            mux_out <= mux_in2;
+            pc_next <= pc_plus1;            -- fluxo normal
         end if;
     end process;
-end Behavioral;
+end architecture;

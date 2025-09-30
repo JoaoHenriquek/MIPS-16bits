@@ -1,18 +1,16 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity somador is
-    Port(
-        somador_in : in  STD_LOGIC_VECTOR(15 downto 0);
-        somador_out : out  STD_LOGIC_VECTOR(15 downto 0)
+    port(
+        somador_in  : in  std_logic_vector(15 downto 0);
+        somador_out : out std_logic_vector(15 downto 0)
     );
-end somador;
+end entity;
 
-architecture Behavioral of somador is
+architecture rtl of somador is
 begin
-    process
-    begin
-        somador_out <= std_logic_vector(unsigned(somador_in) + 1);
-    end process;
-end Behavioral;
+    -- somador combinacional
+    somador_out <= std_logic_vector(unsigned(somador_in) + 1);
+end architecture;

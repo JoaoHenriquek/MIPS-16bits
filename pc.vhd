@@ -1,31 +1,28 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
-entity pcr is
-    Port(
-        clk : in  STD_LOGIC;
-        rst : in  STD_LOGIC;
-        pc_out : out STD_LOGIC_VECTOR(15 downto 0);
-        pc_in : in  STD_LOGIC_VECTOR(15 downto 0);
-        pc_sel : in  STD_LOGIC
+entity pc is
+    port (
+        clk : in  std_logic;
+        rst : in  std_logic;
+        d   : in  std_logic_vector(15 downto 0);
+        q   : out std_logic_vector(15 downto 0)
     );
-end pcr;
+end entity;
 
-architecture Behavioral of pcr is
-    signal pc_reg : STD_LOGIC_VECTOR(15 downto 0);
+architecture rtl of pc is
+    signal reg : std_logic_vector(15 downto 0) := (others => '0');
 begin
-    process(clk, rst)
+    process(clk)
     begin
-        if rst = '1' then
-            pc_reg <= (others => '0');
-        elsif rising_edge(clk) then
-            if pc_sel = '1' then
-                pc_reg <= pc_in;
+        if rising_edge(clk) then
+            if rst = '1' then
+                reg <= (others => '0');
             else
-                pc_reg <= pc_reg; -- mantém o valor atual
+                reg <= d;
             end if;
         end if;
     end process;
 
-    pc_out <= pc_reg; 
-end Behavioral;
+    q <= reg;
+end architecture;
