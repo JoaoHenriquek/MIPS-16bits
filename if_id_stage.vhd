@@ -10,9 +10,9 @@ entity if_id_stage is
         -- entrada: PC atual
         pc_in      : in  std_logic_vector(15 downto 0);
 
-        -- saídas : endereço de jump direto | endereço de branch(6bits) | instrução buscada 
-        inst_out     : out std_logic_vector(15 downto 0); -- vai para o registrador de instrução
-        jump_target  : out std_logic_vector(15 downto 0); -- vai para o mux do pc (usada tanto em jmp quanto em comparação)
+        -- saï¿½das : endereï¿½o de jump direto | endereï¿½o de branch(6bits) | instruï¿½ï¿½o buscada 
+        inst_out     : out std_logic_vector(15 downto 0); -- vai para o registrador de instruï¿½ï¿½o
+        jump_target  : out std_logic_vector(15 downto 0); -- vai para o mux do pc (usada tanto em jmp quanto em comparaï¿½ï¿½o)
         offset_addr  : out std_logic_vector(15 downto 0);  -- vai para o mux do regB (usado para load/store)
         opcode_uc    : out std_logic_vector(3 downto 0)  -- vai para a unidade de controle
 
@@ -22,11 +22,11 @@ end entity;
 
 architecture rtl of if_id_stage is
     --------------------------------------------------------------------------------------------------------------------------------------
-    -- Memória de instrução (ROM síncrona)
+    -- Memï¿½ria de instruï¿½ï¿½o (ROM sï¿½ncrona)
     --------------------------------------------------------------------------------------------------------------------------------------
     type rom_t is array (0 to 4095) of std_logic_vector(15 downto 0);
     constant ROM : rom_t := (
-        0 => x"0000", -- binario de instruções de exemplo
+        0 => x"0000", -- binario de instruï¿½ï¿½es de exemplo
         1 => x"0000", 
         others => (others => '0')
     );
@@ -41,7 +41,7 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            instr_bits <= ROM(to_integer(unsigned(pc_in))); --Recebe o endereço da instrução(entra 16 bits, mas só usa 12 bits)
+            instr_bits <= ROM(to_integer(unsigned(pc_in))); --Recebe o endereï¿½o da instruï¿½ï¿½o(entra 16 bits, mas sï¿½ usa 12 bits)
             opcode    <= ROM(to_integer(unsigned(pc_in)))(15 downto 12); --Extrai o opcode dos 4 bits mais significativos
         end if;
     end process;
@@ -53,25 +53,25 @@ begin
         if rising_edge(clk) then
             case opcode is
                 when "0110" =>
-                    -- Instrução JUMP
+                    -- Instruï¿½ï¿½o JUMP
                     inst_out     <= (others => '0');
                     jump_target  <= "0000" & instr_bits(11 downto 0); 
                     offset_addr  <= (others => '0');
                     opcode_uc    <= opcode;
                 when "0111" | "1000" | "1001" =>
-                    -- Instrução JEQ, JBG, JLR 
+                    -- Instruï¿½ï¿½o JEQ, JBG, JLR 
                     inst_out     <= instr_bits;
                     jump_target  <= (others => '0');
                     offset_addr  <= "0000" & instr_bits(11 downto 0);
                     opcode_uc    <= opcode;
                 when "0100" | "0101" =>
-                    -- Instrução LOAD, STORE
+                    -- Instruï¿½ï¿½o LOAD, STORE
                     inst_out     <= instr_bits;
                     jump_target  <= (others => '0');
                     offset_addr  <= "0000000000" & instr_bits(5 downto 0);
                     opcode_uc    <= opcode;
                 when others =>
-                    -- Outras instruções
+                    -- Outras instruï¿½ï¿½es
                     inst_out     <= instr_bits;
                     jump_target  <= (others => '0');
                     offset_addr  <= (others => '0');
