@@ -7,7 +7,7 @@ entity alu is
         -- operandos
         a, b   : in  std_logic_vector(15 downto 0);
 
-        -- seletor da operação
+        -- seletor da operaï¿½ï¿½o
         sel    : in  std_logic_vector(2 downto 0);
 
         -- resultado
@@ -28,21 +28,22 @@ begin
     b_s <= signed(b);
 
     process(a_s, b_s, sel)
-    begin
-        case sel is
-            when "000" => r_s <= a_s + b_s; -- ADD
-            when "001" => r_s <= a_s - b_s; -- SUB
-            when "010" => r_s <= a_s * b_s; -- MUL
-            when "011" => 
-                if b_s /= 0 then
-                    r_s <= a_s / b_s;       -- DIV
-                else
-                    r_s <= (others => '0');
-                end if;
-            when others =>
+begin
+    case sel is
+        when "000" => r_s <= a_s + b_s; -- ADD
+        when "001" => r_s <= a_s - b_s; -- SUB
+        when "010" => r_s <= resize(a_s * b_s, 16); -- MUL
+        when "011" =>
+            if b_s /= 0 then
+                r_s <= resize(a_s / b_s, 16); -- DIV
+            else
                 r_s <= (others => '0');
-        end case;
-    end process;
+            end if;
+        when others =>
+            r_s <= (others => '0');
+    end case;
+end process;
+
 
     -- resultado
     result <= std_logic_vector(r_s);
